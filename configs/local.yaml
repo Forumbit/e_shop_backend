@@ -1,0 +1,15 @@
+env: local
+database:
+  username: app_user
+  password: securepassword
+  host: localhost
+  port: "5432"
+  db_name: e_shop
+  sslmode: disable
+app:
+  http_username: your_username
+  http_password: your_password
+  host: localhost
+  port: "8080"
+  rw_timeout: 5s
+  idle_timeout: 60s
