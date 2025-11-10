@@ -1,7 +1,11 @@
 package main
 
 import (
+	"e_shop_backend.amirkharisov.net/internal/http_server"
+	"e_shop_backend.amirkharisov.net/internal/http_server/handlers"
 	"e_shop_backend.amirkharisov.net/internal/infrastructure/config"
+	"e_shop_backend.amirkharisov.net/internal/repositories"
+	"e_shop_backend.amirkharisov.net/internal/services"
 	"e_shop_backend.amirkharisov.net/migrations"
 	"e_shop_backend.amirkharisov.net/pkg/postgre"
 )
@@ -19,4 +23,14 @@ func main() {
 	if err = migrations.PostgresMigrate(db, migrations.PostgresEmbedFS, cfg.DB); err != nil {
 		panic("Failed to run migrations: " + err.Error())
 	}
+
+	productRepo := repositories.NewProductRepository(db)
+
+	productService := services.NewProductService(productRepo)
+
+	handler := handlers.NewHandler(productService)
+
+	router := http_server.NewRouter(cfg, handler)
+
+	router.Run()
 }
