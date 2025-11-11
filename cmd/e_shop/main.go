@@ -24,11 +24,13 @@ func main() {
 		panic("Failed to run migrations: " + err.Error())
 	}
 
+	categoryRepo := repositories.NewCategoryRepository(db)
 	productRepo := repositories.NewProductRepository(db)
 
+	categoryService := services.NewCategoryService(categoryRepo)
 	productService := services.NewProductService(productRepo)
 
-	handler := handlers.NewHandler(productService)
+	handler := handlers.NewHandler(categoryService, productService)
 
 	router := http_server.NewRouter(cfg, handler)
 

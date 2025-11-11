@@ -20,7 +20,7 @@ func (h *Handler) Product(c *gin.Context) {
 		c.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
 		return
 	}
-	c.JSON(http.StatusOK, gin.H{"product": product})
+	c.JSON(http.StatusOK, map[string]any{"product": product})
 }
 
 func (h *Handler) CreateProduct(c *gin.Context) {
@@ -52,7 +52,7 @@ func (h *Handler) UpdateProduct(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusAccepted, gin.H{"product": product})
+	c.JSON(http.StatusOK, gin.H{"product": product})
 }
 
 func (h *Handler) DeleteProduct(c *gin.Context) {
@@ -67,7 +67,7 @@ func (h *Handler) DeleteProduct(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusAccepted, fmt.Sprintf("Id:", id, "is deleted"))
+	c.JSON(http.StatusOK, fmt.Sprintf("Id:", id, "is deleted"))
 }
 
 func (h *Handler) GetAllProduct(c *gin.Context) {
@@ -76,5 +76,5 @@ func (h *Handler) GetAllProduct(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	c.JSON(http.StatusAccepted, gin.H{"products": products})
+	c.JSON(http.StatusOK, gin.H{"products": products})
 }

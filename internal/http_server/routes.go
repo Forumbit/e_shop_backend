@@ -5,15 +5,24 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+type categoryHandler interface {
+	CreateCategory(c *gin.Context)
+	Category(ctx *gin.Context)
+	UpdateCategory(c *gin.Context)
+	DeleteCategory(c *gin.Context)
+	GetAllCategory(c *gin.Context)
+}
+
 type productHandler interface {
-	Product(ctx *gin.Context)
 	CreateProduct(c *gin.Context)
+	Product(ctx *gin.Context)
 	UpdateProduct(c *gin.Context)
 	DeleteProduct(c *gin.Context)
 	GetAllProduct(c *gin.Context)
 }
 
 type handlerAbs interface {
+	categoryHandler
 	productHandler
 }
 
@@ -24,20 +33,20 @@ func NewRouter(cfg *config.Config, handler handlerAbs) *gin.Engine {
 	router.MaxMultipartMemory = 8 << 20 // 8 MiB
 
 	// Adding a category:
-	// // * GET /categories
-	// router.GET("/categories", handler.category)
+	cg := router.Group("/category")
+	cg.POST("", handler.CreateCategory)
+	cg.GET(":id", handler.Category)
+	cg.PUT("", handler.UpdateCategory)
+	cg.DELETE(":id", handler.DeleteCategory)
+	cg.GET("all", handler.GetAllCategory)
 
-	// * GET /product
-	router.GET("/product/:id", handler.Product)
-
-	// * POST /product
-	router.POST("/product", handler.CreateProduct)
-
-	router.PUT("/product", handler.UpdateProduct)
-
-	router.DELETE("/product/:id", handler.DeleteProduct)
-
-	router.GET("/product/all", handler.GetAllProduct)
+	// products
+	pg := router.Group("/product")
+	pg.POST("", handler.CreateProduct)
+	pg.GET(":id", handler.Product)
+	pg.PUT("", handler.UpdateProduct)
+	pg.DELETE(":id", handler.DeleteProduct)
+	pg.GET("all", handler.GetAllProduct)
 
 	return router
 }
