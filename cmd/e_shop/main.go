@@ -25,12 +25,14 @@ func main() {
 	}
 
 	categoryRepo := repositories.NewCategoryRepository(db)
+	brandRepo := repositories.NewBrandRepository(db)
 	productRepo := repositories.NewProductRepository(db)
 
 	categoryService := services.NewCategoryService(categoryRepo)
+	brandService := services.NewBrandService(brandRepo)
 	productService := services.NewProductService(productRepo)
 
-	handler := handlers.NewHandler(categoryService, productService)
+	handler := handlers.NewHandler(categoryService, productService, brandService)
 
 	router := http_server.NewRouter(cfg, handler)
 
