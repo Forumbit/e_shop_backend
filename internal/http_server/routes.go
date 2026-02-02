@@ -1,9 +1,14 @@
 package http_server
 
 import (
+	"e_shop_backend.amirkharisov.net/internal/http_server/middlewares"
 	"e_shop_backend.amirkharisov.net/internal/infrastructure/config"
 	"github.com/gin-gonic/gin"
 )
+
+type authHandler interface {
+	Login(c *gin.Context)
+}
 
 type categoryHandler interface {
 	CreateCategory(c *gin.Context)
@@ -30,6 +35,7 @@ type productHandler interface {
 }
 
 type handlerAbs interface {
+	authHandler
 	categoryHandler
 	brandHandler
 	productHandler
@@ -41,8 +47,11 @@ func NewRouter(cfg *config.Config, handler handlerAbs) *gin.Engine {
 
 	router.MaxMultipartMemory = 8 << 20 // 8 MiB
 
+	authenticated := router.Group("/")
+	authenticated.Use(middlewares.CheckAuth())
+
 	// categories
-	cg := router.Group("/category")
+	cg := authenticated.Group("/category")
 	cg.POST("", handler.CreateCategory)
 	cg.GET(":id", handler.Category)
 	cg.PUT("", handler.UpdateCategory)
@@ -50,7 +59,7 @@ func NewRouter(cfg *config.Config, handler handlerAbs) *gin.Engine {
 	cg.GET("all", handler.GetAllCategory)
 
 	// brands
-	bg := router.Group("/brand")
+	bg := authenticated.Group("/brand")
 	bg.POST("", handler.CreateBrand)
 	bg.GET(":id", handler.Brand)
 	bg.PUT("", handler.UpdateBrand)
@@ -58,12 +67,15 @@ func NewRouter(cfg *config.Config, handler handlerAbs) *gin.Engine {
 	bg.GET("all", handler.GetAllBrand)
 
 	// products
-	pg := router.Group("/product")
+	pg := authenticated.Group("/product")
 	pg.POST("", handler.CreateProduct)
 	pg.GET(":id", handler.Product)
 	pg.PUT("", handler.UpdateProduct)
 	pg.DELETE(":id", handler.DeleteProduct)
 	pg.GET("all", handler.GetAllProduct)
+
+	public := router.Group("/")
+	public.POST("/login", handler.Login)
 
 	return router
 }

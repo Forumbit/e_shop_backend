@@ -36,5 +36,7 @@ func main() {
 
 	router := http_server.NewRouter(cfg, handler)
 
+	router.Use()
+
 	router.Run()
 }

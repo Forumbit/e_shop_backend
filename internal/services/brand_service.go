@@ -2,6 +2,7 @@ package services
 
 import (
 	"context"
+	"fmt"
 
 	"e_shop_backend.amirkharisov.net/internal/domain/models"
 )
@@ -27,6 +28,9 @@ func (bs *BrandService) Create(ctx context.Context, brand *models.Brand) (int, e
 }
 
 func (bs *BrandService) GetByID(ctx context.Context, id int) (*models.Brand, error) {
+	if id < 0 {
+		return nil, fmt.Errorf("ID must be positive")
+	}
 	return bs.repo.GetByID(ctx, id)
 }
 
